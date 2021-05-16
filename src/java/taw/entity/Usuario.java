@@ -21,7 +21,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -51,26 +50,23 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Usuario.findByIntereses", query = "SELECT u FROM Usuario u WHERE u.intereses = :intereses")})
 public class Usuario implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "ID")
-    private Integer id;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "EMAIL")
-    private String email;
+private String email;
     @Size(max = 45)
     @Column(name = "NOMBRE")
     private String nombre;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 45)
     @Column(name = "APELLIDOS")
     private String apellidos;
     @Basic(optional = false)
-    @NotNull
+    @NotNull()
     @Size(min = 1, max = 45)
     @Column(name = "CONTRASE\u00d1A")
     private String contraseña;
@@ -83,16 +79,22 @@ public class Usuario implements Serializable {
     @Size(max = 45)
     @Column(name = "SEXO")
     private String sexo;
-    @Column(name = "FECHA_REGISTRO")
-    @Temporal(TemporalType.DATE)
-    private Date fechaRegistro;
     @Size(max = 45)
     @Column(name = "INTERESES")
     private String intereses;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "ID")
+    private Integer id;
+    @Column(name = "FECHA_REGISTRO")
+    @Temporal(TemporalType.DATE)
+    private Date fechaRegistro;
     @ManyToMany(mappedBy = "usuarioList")
     private List<EstudioEstadistico> estudioEstadisticoList;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "usuario")
-    private Inscripcion inscripcion;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuario")
+    private List<Inscripcion> inscripcionList;
     @JoinColumn(name = "ROL", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private Rol rol;
@@ -118,6 +120,76 @@ public class Usuario implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+
+    @XmlTransient
+    public List<EstudioEstadistico> getEstudioEstadisticoList() {
+        return estudioEstadisticoList;
+    }
+
+    public void setEstudioEstadisticoList(List<EstudioEstadistico> estudioEstadisticoList) {
+        this.estudioEstadisticoList = estudioEstadisticoList;
+    }
+
+    @XmlTransient
+    public List<Inscripcion> getInscripcionList() {
+        return inscripcionList;
+    }
+
+    public void setInscripcionList(List<Inscripcion> inscripcionList) {
+        this.inscripcionList = inscripcionList;
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
+
+    @XmlTransient
+    public List<Evento> getEventoList() {
+        return eventoList;
+    }
+
+    public void setEventoList(List<Evento> eventoList) {
+        this.eventoList = eventoList;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Usuario)) {
+            return false;
+        }
+        Usuario other = (Usuario) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "taw.entity.Usuario[ id=" + id + " ]";
     }
 
     public String getEmail() {
@@ -176,79 +248,12 @@ public class Usuario implements Serializable {
         this.sexo = sexo;
     }
 
-    public Date getFechaRegistro() {
-        return fechaRegistro;
-    }
-
-    public void setFechaRegistro(Date fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
-    }
-
     public String getIntereses() {
         return intereses;
     }
 
     public void setIntereses(String intereses) {
         this.intereses = intereses;
-    }
-
-    @XmlTransient
-    public List<EstudioEstadistico> getEstudioEstadisticoList() {
-        return estudioEstadisticoList;
-    }
-
-    public void setEstudioEstadisticoList(List<EstudioEstadistico> estudioEstadisticoList) {
-        this.estudioEstadisticoList = estudioEstadisticoList;
-    }
-
-    public Inscripcion getInscripcion() {
-        return inscripcion;
-    }
-
-    public void setInscripcion(Inscripcion inscripcion) {
-        this.inscripcion = inscripcion;
-    }
-
-    public Rol getRol() {
-        return rol;
-    }
-
-    public void setRol(Rol rol) {
-        this.rol = rol;
-    }
-
-    @XmlTransient
-    public List<Evento> getEventoList() {
-        return eventoList;
-    }
-
-    public void setEventoList(List<Evento> eventoList) {
-        this.eventoList = eventoList;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Usuario)) {
-            return false;
-        }
-        Usuario other = (Usuario) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "taw.entity.Usuario[ id=" + id + " ]";
     }
     
 }

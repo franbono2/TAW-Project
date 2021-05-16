@@ -5,16 +5,14 @@
  */
 package taw.dao;
 
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import taw.entity.Evento;
 
 /**
  *
- * @author Francisco Bono
+ * @author migue
  */
 @Stateless
 public class EventoFacade extends AbstractFacade<Evento> {
@@ -29,14 +27,6 @@ public class EventoFacade extends AbstractFacade<Evento> {
 
     public EventoFacade() {
         super(Evento.class);
-    }
-    
-    public List<Evento> getAllEvents(){
-        Query q;
-        List<Evento> lista;
-        q = this.em.createNamedQuery("Evento.findAll");
-        lista = q.getResultList();
-        return lista;
     }
     
 }

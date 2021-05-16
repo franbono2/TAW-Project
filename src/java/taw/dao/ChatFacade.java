@@ -12,7 +12,7 @@ import taw.entity.Chat;
 
 /**
  *
- * @author Francisco Bono
+ * @author migue
  */
 @Stateless
 public class ChatFacade extends AbstractFacade<Chat> {

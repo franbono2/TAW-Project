@@ -20,6 +20,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -51,12 +52,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Evento.findByAsientosPorFila", query = "SELECT e FROM Evento e WHERE e.asientosPorFila = :asientosPorFila")})
 public class Evento implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "ID")
-    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Column(name = "COSTE_INSCRIPCION")
@@ -65,8 +60,6 @@ public class Evento implements Serializable {
     @NotNull
     @Column(name = "AFORO")
     private int aforo;
-    @Column(name = "LIMITE_ENTRADAS_POR_USUARIO")
-    private Integer limiteEntradasPorUsuario;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
@@ -90,6 +83,17 @@ public class Evento implements Serializable {
     @Column(name = "FECHA_LIMITE_RESERVA")
     @Temporal(TemporalType.DATE)
     private Date fechaLimiteReserva;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "evento")
+    private List<Inscripcion> inscripcionList;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "ID")
+    private Integer id;
+    @Column(name = "LIMITE_ENTRADAS_POR_USUARIO")
+    private Integer limiteEntradasPorUsuario;
     @Column(name = "NUMERO_FILAS")
     private Integer numeroFilas;
     @Column(name = "ASIENTOS_POR_FILA")
@@ -135,13 +139,6 @@ public class Evento implements Serializable {
         this.costeInscripcion = costeInscripcion;
     }
 
-    public int getAforo() {
-        return aforo;
-    }
-
-    public void setAforo(int aforo) {
-        this.aforo = aforo;
-    }
 
     public Integer getLimiteEntradasPorUsuario() {
         return limiteEntradasPorUsuario;
@@ -151,29 +148,6 @@ public class Evento implements Serializable {
         this.limiteEntradasPorUsuario = limiteEntradasPorUsuario;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getLocalizacion() {
-        return localizacion;
-    }
-
-    public void setLocalizacion(String localizacion) {
-        this.localizacion = localizacion;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 
     public Date getFechaCelebracion() {
         return fechaCelebracion;
@@ -256,5 +230,49 @@ public class Evento implements Serializable {
     public String toString() {
         return "taw.entity.Evento[ id=" + id + " ]";
     }
+    @XmlTransient
+    public List<Inscripcion> getInscripcionList() {
+        return inscripcionList;
+    }
+    public void setInscripcionList(List<Inscripcion> inscripcionList) {
+        this.inscripcionList = inscripcionList;
+    }
+
+
+   
+    public int getAforo() {
+        return aforo;
+    }
+
+    public void setAforo(int aforo) {
+        this.aforo = aforo;
+    }
+
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getLocalizacion() {
+        return localizacion;
+    }
+
+    public void setLocalizacion(String localizacion) {
+        this.localizacion = localizacion;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+
     
 }

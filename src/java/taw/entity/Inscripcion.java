@@ -9,12 +9,14 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -30,16 +32,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Inscripcion.findAll", query = "SELECT i FROM Inscripcion i")
-    , @NamedQuery(name = "Inscripcion.findByEvento", query = "SELECT i FROM Inscripcion i WHERE i.inscripcionPK.evento = :evento")
-    , @NamedQuery(name = "Inscripcion.findByUsuario", query = "SELECT i FROM Inscripcion i WHERE i.inscripcionPK.usuario = :usuario")
+    , @NamedQuery(name = "Inscripcion.findById", query = "SELECT i FROM Inscripcion i WHERE i.id = :id")
     , @NamedQuery(name = "Inscripcion.findByFechaInscripcion", query = "SELECT i FROM Inscripcion i WHERE i.fechaInscripcion = :fechaInscripcion")
     , @NamedQuery(name = "Inscripcion.findByFila", query = "SELECT i FROM Inscripcion i WHERE i.fila = :fila")
     , @NamedQuery(name = "Inscripcion.findByColumna", query = "SELECT i FROM Inscripcion i WHERE i.columna = :columna")})
 public class Inscripcion implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected InscripcionPK inscripcionPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "ID")
+    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Column(name = "FECHA_INSCRIPCION")
@@ -53,37 +57,33 @@ public class Inscripcion implements Serializable {
     @NotNull
     @Column(name = "COLUMNA")
     private int columna;
-    @JoinColumn(name = "EVENTO", referencedColumnName = "ID", insertable = false, updatable = false)
-    @OneToOne(optional = false)
+    @JoinColumn(name = "EVENTO", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
     private Evento evento;
-    @JoinColumn(name = "USUARIO", referencedColumnName = "ID", insertable = false, updatable = false)
-    @OneToOne(optional = false)
+    @JoinColumn(name = "USUARIO", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
     private Usuario usuario;
 
     public Inscripcion() {
     }
 
-    public Inscripcion(InscripcionPK inscripcionPK) {
-        this.inscripcionPK = inscripcionPK;
+    public Inscripcion(Integer id) {
+        this.id = id;
     }
 
-    public Inscripcion(InscripcionPK inscripcionPK, Date fechaInscripcion, int fila, int columna) {
-        this.inscripcionPK = inscripcionPK;
+    public Inscripcion(Integer id, Date fechaInscripcion, int fila, int columna) {
+        this.id = id;
         this.fechaInscripcion = fechaInscripcion;
         this.fila = fila;
         this.columna = columna;
     }
 
-    public Inscripcion(int evento, int usuario) {
-        this.inscripcionPK = new InscripcionPK(evento, usuario);
+    public Integer getId() {
+        return id;
     }
 
-    public InscripcionPK getInscripcionPK() {
-        return inscripcionPK;
-    }
-
-    public void setInscripcionPK(InscripcionPK inscripcionPK) {
-        this.inscripcionPK = inscripcionPK;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Date getFechaInscripcion() {
@@ -129,7 +129,7 @@ public class Inscripcion implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (inscripcionPK != null ? inscripcionPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -140,7 +140,7 @@ public class Inscripcion implements Serializable {
             return false;
         }
         Inscripcion other = (Inscripcion) object;
-        if ((this.inscripcionPK == null && other.inscripcionPK != null) || (this.inscripcionPK != null && !this.inscripcionPK.equals(other.inscripcionPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -148,7 +148,7 @@ public class Inscripcion implements Serializable {
 
     @Override
     public String toString() {
-        return "taw.entity.Inscripcion[ inscripcionPK=" + inscripcionPK + " ]";
+        return "taw.entity.Inscripcion[ id=" + id + " ]";
     }
     
 }

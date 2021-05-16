@@ -7,26 +7,37 @@ package taw.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.text.ParseException;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import taw.entity.Evento;
+import taw.dao.InscripcionFacade;
+import taw.dao.UsuarioFacade;
+import taw.entity.Inscripcion;
+import taw.entity.Usuario;
 
 /**
  *
  * @author migue
  */
-@WebServlet(name = "ServletInscripcion", urlPatterns = {"/ServletInscripcion"})
-public class ServletInscripcion extends HttpServlet {
+@WebServlet(name = "ServletFiltrarReservas", urlPatterns = {"/ServletFiltrarReservas"})
+public class ServletFiltrarReservas extends HttpServlet {
 
+    
+    @EJB
+    public InscripcionFacade inscripcionFacade;
+    
+    @EJB
+    public UsuarioFacade usuarioFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -37,39 +48,17 @@ public class ServletInscripcion extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        List<String> listaAsientosSeleccionados = (List)request.getAttribute("listaAsientosSeleccionados");
-        if(listaAsientosSeleccionados == null){
-            listaAsientosSeleccionados = new ArrayList<>();
-        }
-        String strAsiento= request.getParameter("asientoLibreSeleccionado");
+            throws ServletException, IOException, ParseException {
         
-        String strAsientoYaSeleccionado = request.getParameter("asientoSeleccionado");
+        Usuario usuario = this.usuarioFacade.find(request.getSession().getAttribute("idUsuario"));
+        SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy");
+        String strFechaFiltro = request.getParameter("fechaFiltro");
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse(strFechaFiltro);
+        List<Inscripcion> listaFiltrada = this.inscripcionFacade.inscripcionesFiltrarFecha(date, usuario);
+        request.setAttribute("listaFiltrada", listaFiltrada);
         
-        
-        
-        //String[] asiento = strAsiento.split("-");
-        //int f = Integer.parseInt(asiento[0]);
-        //int c = Integer.parseInt(asiento[1]);
-        listaAsientosSeleccionados.add(strAsiento);
-        
-        String cadena = request.getParameter("asientosSeleccionados");
-        if(cadena != ""){
-             String[] aux = cadena.split(",");
-            for(String s : aux){
-                //String[] aux2 = s.split("-");
-                //int fila = Integer.parseInt(aux2[0]);
-                //int columna = Integer.parseInt(aux2[1]);
-                listaAsientosSeleccionados.add(s);
-            }
-        }
-        listaAsientosSeleccionados.remove(strAsientoYaSeleccionado);
-        request.setAttribute("listaAsientosSeleccionados", listaAsientosSeleccionados);
-        String strIdEvento = request.getParameter("idEvento");
-        ////////////////
-        //response.sendRedirect("infoEvento.jsp");
-        RequestDispatcher rd = request.getRequestDispatcher("ServletInfoEvento?id=" + strIdEvento);
-        rd.forward(request, response);     
+        RequestDispatcher rd = request.getRequestDispatcher("listadoInscripciones.jsp");
+        rd.forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -84,7 +73,11 @@ public class ServletInscripcion extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParseException ex) {
+            Logger.getLogger(ServletFiltrarReservas.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -98,7 +91,11 @@ public class ServletInscripcion extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParseException ex) {
+            Logger.getLogger(ServletFiltrarReservas.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

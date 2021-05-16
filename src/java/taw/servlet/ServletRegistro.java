@@ -7,6 +7,7 @@ package taw.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -103,6 +104,8 @@ public class ServletRegistro extends HttpServlet {
         usuario.setCiudad(ciudad);
         usuario.setSexo(sexo);
         usuario.setRol(rolFacade.findByName("USUARIO"));
+        Date date = new Date(System.currentTimeMillis());
+        usuario.setFechaRegistro(date);
         this.usuarioFacade.create(usuario);
     }
 

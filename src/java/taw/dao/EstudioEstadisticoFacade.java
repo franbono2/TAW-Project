@@ -12,7 +12,7 @@ import taw.entity.EstudioEstadistico;
 
 /**
  *
- * @author Francisco Bono
+ * @author migue
  */
 @Stateless
 public class EstudioEstadisticoFacade extends AbstractFacade<EstudioEstadistico> {

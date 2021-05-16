@@ -12,7 +12,7 @@ import taw.entity.Etiqueta;
 
 /**
  *
- * @author Francisco Bono
+ * @author migue
  */
 @Stateless
 public class EtiquetaFacade extends AbstractFacade<Etiqueta> {

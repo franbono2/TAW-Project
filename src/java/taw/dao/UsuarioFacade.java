@@ -14,7 +14,7 @@ import taw.entity.Usuario;
 
 /**
  *
- * @author Francisco Bono
+ * @author migue
  */
 @Stateless
 public class UsuarioFacade extends AbstractFacade<Usuario> {
@@ -31,8 +31,7 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
         super(Usuario.class);
     }
     
-    
-    public Usuario findByEmail (String email) {
+     public Usuario findByEmail (String email) {
         Query q;
         List<Usuario> lista;
         
@@ -45,4 +44,5 @@ public class UsuarioFacade extends AbstractFacade<Usuario> {
             return lista.get(0);
         }        
     }
+    
 }

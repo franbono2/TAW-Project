@@ -21,10 +21,10 @@
             <%= strError %> <br/>
             Correo electrónico: <input type ="text" name="email" value=""/><br/>
             Contraseña: <input type="password" name="contrasenia" value="" /><br>
-            Nombre:     <input type ="text" name="nombre" value=""/><br/>
-            Apellidos:  <input type ="text" name="apellidos" value=""/><br/>
-            Domicilio:  <input type ="text" name="domicilio" value=""/><br/>
-            Ciudad:     <input type ="text" name="ciudad" value=""/><br/>
+            Nombre: <input type ="text" name="nombre" value=""/><br/>
+            Apellidos: <input type ="text" name="apellidos" value=""/><br/>
+            Domicilio: <input type ="text" name="domicilio" value=""/><br/>
+            Ciudad: <input type ="text" name="ciudad" value=""/><br/>
             Sexo: 
             <br> <input type="radio" id="hombre" name="genero" value="hombre">
             <label for="hombre">Hombre</label><br>
@@ -32,6 +32,7 @@
             <label for="female">Mujer</label><br>
             <input type="radio" id="otro" name="genero" value="otro">
             <label for="otro">Otro</label>
+            </br>
             
             <input type="submit" value="Registrar" />
         </form>

@@ -7,26 +7,25 @@ package taw.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import taw.entity.Evento;
+import taw.dao.InscripcionFacade;
+import taw.entity.Inscripcion;
 
 /**
  *
  * @author migue
  */
-@WebServlet(name = "ServletInscripcion", urlPatterns = {"/ServletInscripcion"})
-public class ServletInscripcion extends HttpServlet {
+@WebServlet(name = "ServletCancelarReserva", urlPatterns = {"/ServletCancelarReserva"})
+public class ServletCancelarReserva extends HttpServlet {
 
+    @EJB
+    public InscripcionFacade inscripcionFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -38,38 +37,12 @@ public class ServletInscripcion extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<String> listaAsientosSeleccionados = (List)request.getAttribute("listaAsientosSeleccionados");
-        if(listaAsientosSeleccionados == null){
-            listaAsientosSeleccionados = new ArrayList<>();
-        }
-        String strAsiento= request.getParameter("asientoLibreSeleccionado");
+        String strIdInscripcion = request.getParameter("idInscripcion");
+        Inscripcion inscripcion = this.inscripcionFacade.find(Integer.parseInt(strIdInscripcion));
+        this.inscripcionFacade.remove(inscripcion);
         
-        String strAsientoYaSeleccionado = request.getParameter("asientoSeleccionado");
-        
-        
-        
-        //String[] asiento = strAsiento.split("-");
-        //int f = Integer.parseInt(asiento[0]);
-        //int c = Integer.parseInt(asiento[1]);
-        listaAsientosSeleccionados.add(strAsiento);
-        
-        String cadena = request.getParameter("asientosSeleccionados");
-        if(cadena != ""){
-             String[] aux = cadena.split(",");
-            for(String s : aux){
-                //String[] aux2 = s.split("-");
-                //int fila = Integer.parseInt(aux2[0]);
-                //int columna = Integer.parseInt(aux2[1]);
-                listaAsientosSeleccionados.add(s);
-            }
-        }
-        listaAsientosSeleccionados.remove(strAsientoYaSeleccionado);
-        request.setAttribute("listaAsientosSeleccionados", listaAsientosSeleccionados);
-        String strIdEvento = request.getParameter("idEvento");
-        ////////////////
-        //response.sendRedirect("infoEvento.jsp");
-        RequestDispatcher rd = request.getRequestDispatcher("ServletInfoEvento?id=" + strIdEvento);
-        rd.forward(request, response);     
+        RequestDispatcher rd = request.getRequestDispatcher("ServletListadoInscripciones");
+        rd.forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

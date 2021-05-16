@@ -7,10 +7,10 @@ package taw.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -30,15 +30,18 @@ import taw.entity.Usuario;
  *
  * @author migue
  */
-@WebServlet(name = "ServletInfoEvento", urlPatterns = {"/ServletInfoEvento"})
-public class ServletInfoEvento extends HttpServlet {
+@WebServlet(name = "ServletRegistroEnEvento", urlPatterns = {"/ServletRegistroEnEvento"})
+public class ServletRegistroEnEvento extends HttpServlet {
 
-    @EJB
-    public EventoFacade eventoFacade;
-    @EJB
-    public InscripcionFacade inscripcionFacade;
+    
     @EJB
     public UsuarioFacade usuarioFacade;
+    
+    @EJB 
+    public InscripcionFacade inscripcionFacade;
+    
+    @EJB
+    public EventoFacade eventoFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,42 +53,55 @@ public class ServletInfoEvento extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       String strIdEvento = request.getParameter("id");
-       if(strIdEvento != null){ 
-            Evento evento = this.eventoFacade.find(Integer.parseInt(strIdEvento));
-            HttpSession sesion = request.getSession();
-            Usuario usuario = this.usuarioFacade.find(sesion.getAttribute("idUsuario"));
-            List<Inscripcion> listaInscripcionesUsuario = this.inscripcionFacade.usuarioInscritoEn(evento, usuario);
-            if(listaInscripcionesUsuario == null || listaInscripcionesUsuario.isEmpty()){
-                listaInscripcionesUsuario = new ArrayList();
-                boolean inscrito = false;
-                request.setAttribute("inscrito", inscrito);
-            }else{
-                boolean inscrito = true;
-                request.setAttribute("inscrito", inscrito);
-            }
-            List<Inscripcion> listaInscripciones = this.inscripcionFacade.inscripcionesEvento(evento);
-            if(listaInscripciones == null || listaInscripciones.isEmpty()){
-                listaInscripciones = new ArrayList();
-            }
-            int nEntradasOcupadas = this.inscripcionFacade.inscripcionesTotales(evento);
-            request.setAttribute("nEntradasOcupadas", Math.abs(nEntradasOcupadas));
-            
-            List<String> listaAsientosSeleccionados = (List)request.getAttribute("listaAsientosSeleccionados");
-            if(listaAsientosSeleccionados == null){
-                listaAsientosSeleccionados = new ArrayList<>();
-            }
-            
-            request.setAttribute("listaAsientosSeleccionados", listaAsientosSeleccionados);
-            request.setAttribute("evento", evento);
-            request.setAttribute("listaInscripcionesUsuario", listaInscripcionesUsuario);
-            request.setAttribute("listaInscripciones", listaInscripciones);
-       }
+        //List<String> listaAsientosSeleccionados = new ArrayList<>();
+        String strIdEvento = request.getParameter("idEvento");
+        String strAsientosSeleccionados = request.getParameter("asientosSeleccionados");
+        SimpleDateFormat formateador = new SimpleDateFormat("dd/mm/yyyy");
+        String strNEntradasNoNumeradas = request.getParameter("nEntradas");
+        
+        
+        
        
-       //response.sendRedirect("infoEvento.jsp");
-       RequestDispatcher rd = request.getRequestDispatcher("infoEvento.jsp");
-       rd.forward(request, response);     
-       
+        
+        Evento evento = this.eventoFacade.find(Integer.parseInt(strIdEvento));
+        HttpSession sesion = request.getSession();
+        Usuario usuario = this.usuarioFacade.find(sesion.getAttribute("idUsuario"));
+        if(strNEntradasNoNumeradas == null || strNEntradasNoNumeradas.isEmpty()){
+            if(strAsientosSeleccionados != ""){
+             String[] aux = strAsientosSeleccionados.split(",");
+                for(String s : aux){
+                    String[] aux2 = s.split("-");
+                    int fila = Integer.parseInt(aux2[0]);
+                    int columna = Integer.parseInt(aux2[1]);
+
+                    Inscripcion inscripcion = new Inscripcion();
+
+
+                    Date date = new Date(System.currentTimeMillis());
+                    inscripcion.setEvento(evento);
+                    inscripcion.setFila(fila);
+                    inscripcion.setColumna(columna);
+                    inscripcion.setFechaInscripcion(date);
+                    inscripcion.setUsuario(usuario);
+
+                    this.inscripcionFacade.create(inscripcion);  
+                }
+            }
+        }else{
+            int nEntradasNoNumeradas = Integer.parseInt(strNEntradasNoNumeradas);
+            Inscripcion inscripcion = new Inscripcion();
+            Date date = new Date(System.currentTimeMillis());
+            inscripcion.setEvento(evento);
+            nEntradasNoNumeradas = 0 - nEntradasNoNumeradas;
+            inscripcion.setFila(nEntradasNoNumeradas);
+            inscripcion.setColumna(nEntradasNoNumeradas);
+            inscripcion.setFechaInscripcion(date);
+            inscripcion.setUsuario(usuario);
+            this.inscripcionFacade.create(inscripcion); 
+        }
+        
+        RequestDispatcher rd = request.getRequestDispatcher("principal.jsp");
+        rd.forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

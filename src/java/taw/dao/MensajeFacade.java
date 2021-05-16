@@ -12,7 +12,7 @@ import taw.entity.Mensaje;
 
 /**
  *
- * @author Francisco Bono
+ * @author migue
  */
 @Stateless
 public class MensajeFacade extends AbstractFacade<Mensaje> {

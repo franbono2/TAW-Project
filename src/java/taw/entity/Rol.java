@@ -36,17 +36,18 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Rol.findByTipo", query = "SELECT r FROM Rol r WHERE r.tipo = :tipo")})
 public class Rol implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 45)
+    @Column(name = "TIPO")
+    private String tipo;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "TIPO")
-    private String tipo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "rol")
     private List<Usuario> usuarioList;
 
@@ -70,13 +71,6 @@ public class Rol implements Serializable {
         this.id = id;
     }
 
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
 
     @XmlTransient
     public List<Usuario> getUsuarioList() {
@@ -110,6 +104,14 @@ public class Rol implements Serializable {
     @Override
     public String toString() {
         return "taw.entity.Rol[ id=" + id + " ]";
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
     
 }
